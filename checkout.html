@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TechLink — Checkout</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/checkout.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <style>
+    /* hide fields at first */
+    .form-field {
+      display: none;
+    }
+
+    /* shake animation */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+      100% { transform: translateX(0); }
+    }
+    .shake {
+      animation: shake 0.4s;
+    }
+
+    .error-text {
+      color: red;
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">📱 TechLink</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navCollapse">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="wishlist.html">Wishlist <span id="wishCount" class="badge text-bg-danger">0</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="cart.html">Cart <span id="cartCount" class="badge text-bg-warning">0</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="aboutus.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="Feedback.html">Feedback</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <main class="container py-5">
+    <!-- Progress indicator -->
+    <div class="d-flex justify-content-center gap-3 mb-4">
+      <div class="px-3 py-2 rounded-pill bg-secondary text-white">1. Cart</div>
+      <div class="px-3 py-2 rounded-pill bg-primary text-white">2. Checkout</div>
+      <div class="px-3 py-2 rounded-pill bg-light">3. Complete</div>
+    </div>
+
+    <h1 class="mb-4">Checkout</h1>
+
+    <div id="emptyCheckout" class="alert alert-info text-center" style="display:none;">
+      🛒 Your cart is empty — <a href="products.html" class="alert-link">start shopping</a>.
+    </div>
+
+    <div id="checkoutArea" class="row gy-4">
+      <div class="col-md-6">
+        <h4>Shipping Details</h4>
+        <form id="checkoutForm" onsubmit="return false;">
+          <div class="mb-3 form-field">
+            <label class="form-label">Full Name</label>
+            <input id="shipName" class="form-control" required>
+            <div id="nameError" class="error-text"></div>
+          </div>
+          <div class="mb-3 form-field">
+            <label class="form-label">Address</label>
+            <input id="shipAddress" class="form-control" required>
+            <div id="addressError" class="error-text"></div>
+          </div>
+          <div class="mb-3 form-field">
+            <label class="form-label">Phone</label>
+            <input id="shipPhone" class="form-control" required>
+            <div id="phoneError" class="error-text"></div>
+          </div>
+          <div class="mb-3 form-field">
+            <label class="form-label">Payment Method</label>
+            <select id="payMethod" class="form-select" required>
+              <option value="">Select</option>
+              <option>Credit/Debit Card</option>
+              <option>Online Banking</option>
+              <option>E-Wallet</option>
+            </select>
+            <div id="paymentError" class="error-text"></div>
+          </div>
+          <button id="placeOrder" class="btn btn-success w-100">Place Order</button>
+        </form>
+      </div>
+      <div class="col-md-6">
+        <h4>Order Summary</h4>
+        <div id="orderSummary" class="border rounded p-3 bg-body-tertiary"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+   <footer class="bg-dark text-light py-4 mt-5">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+      <small>&copy; <span id="year"></span> PhoneStore</small>
+      <div>
+        <!-- Social share plugin (simple) -->
+        <a class="text-light me-2" href="#" id="shareFacebook" title="Share on Facebook">Facebook</a>
+        <a class="text-light" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=Check+out+PhoneStore&url=" title="Share on X">X</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    function fmt(n){ return (Math.round(n*100)/100).toFixed(2); }
+
+    function renderOrderSummary(target){
+      const cart = JSON.parse(localStorage.getItem('ps_cart')||'[]');
+      let subtotal = 0;
+      let totalQty = 0; 
+
+      cart.forEach(it => {
+        const price = Number(it.price) || 0;
+        const qty = Number(it.qty) || 1;
+        subtotal += price * qty;
+        totalQty += qty;
+      });
+
+      const tax = subtotal * 0.06;
+      const shipping = subtotal >= 200 ? 0 : 20;
+      const total = subtotal + tax + shipping;
+
+      $(target).html(`
+        <p>Items: ${totalQty}</p>
+        <p>Subtotal: RM ${fmt(subtotal)}</p>
+        <p>Tax (6%): RM ${fmt(tax)}</p>
+        <p>Shipping: RM ${fmt(shipping)}</p>
+        <h5>Total: RM ${fmt(total)}</h5>
+      `);
+    }
+
+    $(function(){
+      $('#year').text(new Date().getFullYear());
+      updateCartUI?.(); updateWishUI?.();
+
+      const cart = JSON.parse(localStorage.getItem('ps_cart')||'[]');
+      if(cart.length === 0){
+        $('#emptyCheckout').show();
+        $('#checkoutArea').hide();
+      } else {
+        renderOrderSummary('#orderSummary');
+      }
+
+      // Animate shipping form fields
+      $(".form-field").each(function(i){
+        $(this).delay(300 * i).slideDown(500);
+      });
+
+      // Validation + Shake
+      $("#placeOrder").on("click", function(){
+        let valid = true;
+
+        // reset errors
+        $(".error-text").text("");
+        $(".form-control, .form-select").removeClass("border-danger");
+
+        // Full name (only alphabets & spaces)
+        const name = $("#shipName").val().trim();
+        if(!/^[A-Za-z\s]+$/.test(name)){
+          $("#nameError").text("Name must contain only letters and spaces.");
+          $("#shipName").addClass("shake border-danger");
+          valid = false;
+          setTimeout(()=>$("#shipName").removeClass("shake"),500);
+        }
+
+        // Address (not empty)
+        const address = $("#shipAddress").val().trim();
+        if(address.length < 5){
+          $("#addressError").text("Please enter a valid address.");
+          $("#shipAddress").addClass("shake border-danger");
+          valid = false;
+          setTimeout(()=>$("#shipAddress").removeClass("shake"),500);
+        }
+
+        // Phone (only digits, min 8)
+        const phone = $("#shipPhone").val().trim();
+        if(!/^[0-9]{8,}$/.test(phone)){
+          $("#phoneError").text("Phone must be at least 8 digits, numbers only.");
+          $("#shipPhone").addClass("shake border-danger");
+          valid = false;
+          setTimeout(()=>$("#shipPhone").removeClass("shake"),500);
+        }
+
+        // Payment method
+        if($("#payMethod").val() === ""){
+          $("#paymentError").text("Please select a payment method.");
+          $("#payMethod").addClass("shake border-danger");
+          valid = false;
+          setTimeout(()=>$("#payMethod").removeClass("shake"),500);
+        }
+
+        if(valid){
+          placeOrder();
+        }
+      });
+
+      $('#shareFacebook').on('click',function(e){
+        e.preventDefault();
+        const u=encodeURIComponent(location.href);
+        window.open('https://www.facebook.com/sharer/sharer.php?u='+u,'fbshare','width=600,height=400');
+      });
+    });
+  </script>
+</body>
+</html>

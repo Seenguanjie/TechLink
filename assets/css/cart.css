@@ -1,0 +1,23 @@
+/* cart.css */
+
+.cart-line {
+  transition: background-color 0.2s ease;
+  border-radius: 8px;
+}
+.cart-line:hover {
+  background-color: #f8f9fa; /* light gray highlight */
+}
+
+.qty-input {
+  text-align: center;
+}
+
+#summaryCard {
+  border: 2px solid var(--primary);
+  border-radius: 12px;
+  background-color: #eeeeee; /* light grey background */
+}
+
+#summaryCard h5 {
+  color: var(--primary);
+}

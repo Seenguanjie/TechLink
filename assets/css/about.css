@@ -1,0 +1,10 @@
+.mb-5,.mt-5,.col-md-6{
+    opacity: 0;
+    transform: translateX(-1rem);
+    transition: all 1s ease-in-out;
+}
+
+.mb-5.show,.mt-5.show,.col-md-6.show{
+    opacity: 1;
+    transform: translateX(0);
+}

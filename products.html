@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TechLink — Products</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">📱 TechLink</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navCollapse">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navCollapse">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="wishlist.html">Wishlist <span id="wishCount" class="badge text-bg-danger">0</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="cart.html">Cart <span id="cartCount" class="badge text-bg-warning">0</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="aboutus.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="Feedback.html">Feedback</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div class="d-flex flex-column flex-md-row gap-3 justify-content-between align-items-md-center">
+      <h1 class="mb-0">All Phones</h1>
+      <div class="d-flex gap-2">
+        <input id="searchBox" class="form-control" placeholder="Search phones..." style="width:240px" />
+        <select id="sortSelect" class="form-select" style="width:180px">
+          <option value="relevance">Sort: Relevance</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="productsGrid" class="row g-3 mt-3">
+      <!-- products rendered here -->
+    </div>
+  </main>
+
+ <footer class="bg-dark text-light py-4 mt-5">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+      <small>&copy; <span id="year"></span> PhoneStore</small>
+      <div>
+        <!-- Social share plugin (simple) -->
+        <a class="text-light me-2" href="#" id="shareFacebook" title="Share on Facebook">Facebook</a>
+        <a class="text-light" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=Check+out+PhoneStore&url=" title="Share on X">X</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    $(function(){
+      $('#year2').text(new Date().getFullYear());
+      updateCartUI(); updateWishUI();
+      fetchProducts(32, '#productsGrid');        // REST API fetch (smartphones)
+      $('#searchBox').on('input', function(){ filterProducts($(this).val()); });
+      $('#sortSelect').on('change', function(){ sortProducts($(this).val()); });
+    });
+
+
+    $(document).ready(function() {
+      // Fade in main content
+      $("main").css("display", "none").fadeIn(1000);
+
+      // Smooth scroll for nav links
+      $("a").on("click", function(event) {
+          if (this.hash !== "") {
+              event.preventDefault();
+              var hash = this.hash;
+              $("html, body").animate({
+                  scrollTop: $(hash).offset().top
+              }, 800);
+          }
+      });
+
+      // Hover effect on product cards
+      $(".product-card").hover(
+          function() { $(this).animate({ marginTop: "-10px" }, 300); },
+          function() { $(this).animate({ marginTop: "0px" }, 300); }
+      );
+    });
+  </script>
+</body>
+</html>
