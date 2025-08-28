@@ -35,7 +35,7 @@ function ensureSession(){
 
 // --- Product / API helpers ---
 // Using a free demo API: DummyJSON smartphones
-const API_ENDPOINT = 'https://dummyjson.com/c/0ac2-8382-4597-9458';
+const API_ENDPOINT = 'https://dummyjson.com/c/2290-48a3-4ff0-925f';
 let PRODUCTS_CACHE = [];
 
 function fetchProducts(limit=12, targetSelector){
